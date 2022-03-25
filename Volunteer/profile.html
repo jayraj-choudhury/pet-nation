@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+	 <!--Cognito JavaScript-->
+	<script src="js/amazon-cognito-identity.min.js"></script>  
+	<script src="js/config.js"></script>
+
+	<title>Volunteer DashBoard </title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta name= "viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="icon" href="imgs/dog.jpg" style="border-radius: 50%;" type="image/jpg">
+
+  </head>
+
+  <body>
+
+
+
+	<section class="header container-fluid">
+
+        <div class="header1">
+			<img src="imgs/dog.jpg">
+		   <h1 style="color: #f5f5f5;font-family: grad, serif;font-weight: 700; font-style: normal;text-align: center;" > WELCOME</h1>
+		</div>
+
+        <div class="container">
+            <div>
+              <br><br>
+              <div>
+                  <h3><label>Email <span>(Username)</span></label></h3>
+              </div>
+              <div>
+                  <h3><label id="email_value"></label></h3>
+              </div>
+            </div>
+        </div>
+		<br>
+	
+		<!-- <div> Name of the Volunteer : <span id="name"></span> </div> 
+		<br>
+		<div> College Name : <span id="college"></span></div>
+		<br>
+		<div> Stream : <span id="stream"></span></div> -->
+
+        <br><br>
+        <div class="row">
+            <div class="col-4"></div>
+            <div class="col-4">
+                <button class="btn btn-primary btn-lg btn-block" type="submit" onclick="signOut()">Logout</button>
+            </div>
+            <div class="col-4"></div>
+        </div>
+        
+
+	</section>
+
+    <script>
+		var data = { 
+			UserPoolId : _config.cognito.userPoolId,
+			ClientId : _config.cognito.clientId
+		};
+		var userPool = new AmazonCognitoIdentity.CognitoUserPool(data);
+		var cognitoUser = userPool.getCurrentUser();
+		
+		window.onload = function(){
+			if (cognitoUser != null) {
+				cognitoUser.getSession(function(err, session) {
+					if (err) {
+						alert(err);
+						return;
+					}
+					console.log('session validity: ' + session.isValid());
+					//Set the profile info
+					cognitoUser.getUserAttributes(function(err, result) {
+						if (err) {
+							console.log(err);
+							return;
+						}
+						console.log(result);
+						document.getElementById("email_value").innerHTML = result[2].getValue();	
+					});			
+				});
+			}
+		}
+		function signOut(){
+			if (cognitoUser != null) {
+				cognitoUser.signOut();	
+				window.location.replace("login.html");  
+			}
+		}
+
+		// fetch("try.json")
+		// 	.then(response => response.json())
+		// 	.then(data => {
+		// 		document.querySelector("[id='name']").innerText = data.name
+		// 		document.querySelector("[id='college']").innerText = data.college
+		// 		document.querySelector("[id='stream']").innerText = data.stream
+		// 	});
+    </script>
+  </body>
+</html>
